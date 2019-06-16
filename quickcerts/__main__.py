@@ -78,11 +78,11 @@ def ensure_ca_cert(output_dir, ca_private_key):
                 backend=default_backend())
     else:
         iname = x509.Name([
-            x509.NameAttribute(NameOID.COMMON_NAME, 'Test CA'),
+            x509.NameAttribute(NameOID.COMMON_NAME, 'QuickCert CA'),
             x509.NameAttribute(NameOID.ORGANIZATION_NAME,
-                'postfix-mta-sts-resolver dev'),
+                'QuickCert'),
             x509.NameAttribute(NameOID.ORGANIZATIONAL_UNIT_NAME,
-                'postfix-mta-sts-resolver testsuite'),
+                'QuickCert tool'),
         ])
         ca_cert = x509.CertificateBuilder().\
             subject_name(iname).\
