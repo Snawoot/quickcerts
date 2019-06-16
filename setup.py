@@ -8,7 +8,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(name='quickcerts',
       version='0.1.0',
-      description='Quick and easy X.509 certificate generator for SSL/TLS',
+      description='Quick and easy X.509 certificate generator for SSL/TLS utilizing local PKI',
       url='https://github.com/Snawoot/quickcerts',
       author='Vladislav Yarmak',
       author_email='vladislav-ex-src@vm-0.com',
