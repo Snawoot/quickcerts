@@ -13,6 +13,18 @@ Quick and easy X.509 certificate generator for SSL/TLS utilizing local PKI
 pip3 install .
 ```
 
+## Usage example
+
+```
+quickcerts -D *.example.com example.com -D www.example2.com example2.com mx.example2.com
+```
+
+This command will produce following files in current directory:
+* CA certificate and key
+* Two certificates with keys having multiple DNS names in SubjectAlternativeName fields.
+
+Consequent invokations will reuse created CA.
+
 ## Synopsis
 
 ```
