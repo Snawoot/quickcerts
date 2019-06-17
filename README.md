@@ -38,7 +38,8 @@ Consequent invokations will reuse created CA.
 
 ```
 $ quickcerts --help
-usage: quickcerts [-h] [-o OUTPUT_DIR] [-k KEY_SIZE] -D DOMAINS [DOMAINS ...]
+usage: quickcerts [-h] [-o OUTPUT_DIR] [-k KEY_SIZE]
+                  [-D DOMAINS [DOMAINS ...]] [-C CLIENT]
 
 Generate RSA certificates signed by common self-signed CA
 
@@ -49,7 +50,10 @@ optional arguments:
   -k KEY_SIZE, --key-size KEY_SIZE
                         RSA key size used for all certificates (default: 2048)
   -D DOMAINS [DOMAINS ...], --domains DOMAINS [DOMAINS ...]
-                        domain names covered by certificate. First one will be
-                        set as CN. Option can be used multiple times (default:
-                        None)
+                        Generate server certificate which covers following
+                        domains delimited by spaces. First one will be set as
+                        CN. Option can be used multiple times. (default: None)
+  -C CLIENT, --client CLIENT
+                        Generate client certificate with following name.
+                        (default: None)
 ```
