@@ -18,7 +18,7 @@ Quick and easy X.509 certificate generator for SSL/TLS utilizing local PKI
 ## Installation
 
 ```
-pip3 install .
+pip3 install quickcerts
 ```
 
 ## Usage example
