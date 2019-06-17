@@ -4,6 +4,8 @@ import argparse
 import datetime
 import uuid
 import os.path
+import re
+import string
 
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
@@ -16,6 +18,11 @@ CA_FILENAME = 'ca'
 KEY_EXT = 'key'
 CERT_EXT = 'pem'
 E = 65537
+
+safe_symbols = set(string.ascii_letters + string.digits + '-.')
+
+def safe_filename(name):
+    return "".join(c if c in safe_symbols else '_' for c in name)
 
 def parse_args():
     def check_keysize(val):
@@ -52,7 +59,7 @@ def parse_args():
     return parser.parse_args()
 
 def ensure_private_key(output_dir, name, key_size):
-    key_filename = os.path.join(output_dir, name + '.' + KEY_EXT)
+    key_filename = os.path.join(output_dir, safe_filename(name) + '.' + KEY_EXT)
     if os.path.exists(key_filename):
         with open(key_filename, "rb") as key_file:
             private_key = serialization.load_pem_private_key(key_file.read(),
@@ -126,7 +133,7 @@ def ensure_end_entity_key(output_dir, name, key_size):
 
 def ensure_end_entity_cert(output_dir, names, ca_private_key, ca_cert, end_entity_public_key, is_server=True):
     name = names[0]
-    end_entity_cert_filename = os.path.join(output_dir, name + '.' + CERT_EXT)
+    end_entity_cert_filename = os.path.join(output_dir, safe_filename(name) + '.' + CERT_EXT)
     if os.path.exists(end_entity_cert_filename):
         return
     ca_public_key = ca_private_key.public_key()
