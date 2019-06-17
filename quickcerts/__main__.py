@@ -42,10 +42,12 @@ def parse_args():
     parser.add_argument("-D", "--domains",
                         action="append",
                         nargs="+",
-                        required=True,
-                        help="domain names covered by certificate. "
-                        "First one will be set as CN. Option can be used "
-                        "multiple times")
+                        help="Generate server certificate which covers "
+                        "following domains delimited by spaces. First one "
+                        "will be set as CN. Option can be used multiple times.")
+    parser.add_argument("-C", "--client",
+                        action="append",
+                        help="Generate client certificate with following name.")
 
     return parser.parse_args()
 
@@ -122,13 +124,13 @@ def ensure_ca_cert(output_dir, ca_private_key):
 def ensure_end_entity_key(output_dir, name, key_size):
     return ensure_private_key(output_dir, name, key_size)
 
-def ensure_end_entity_cert(output_dir, names, ca_private_key, ca_cert, end_entity_public_key):
+def ensure_end_entity_cert(output_dir, names, ca_private_key, ca_cert, end_entity_public_key, is_server=True):
     name = names[0]
     end_entity_cert_filename = os.path.join(output_dir, name + '.' + CERT_EXT)
     if os.path.exists(end_entity_cert_filename):
         return
     ca_public_key = ca_private_key.public_key()
-    end_entity_cert = x509.CertificateBuilder().\
+    end_entity_cert_builder = x509.CertificateBuilder().\
         subject_name(x509.Name([
             x509.NameAttribute(NameOID.COMMON_NAME, name),
         ])).\
@@ -153,21 +155,22 @@ def ensure_end_entity_cert(output_dir, names, ca_private_key, ca_cert, end_entit
             critical=True).\
         add_extension(
             x509.ExtendedKeyUsage([
-                ExtendedKeyUsageOID.SERVER_AUTH,
-                ExtendedKeyUsageOID.CLIENT_AUTH,
+                ExtendedKeyUsageOID.SERVER_AUTH if is_server else ExtendedKeyUsageOID.CLIENT_AUTH,
             ]), critical=False).\
         add_extension(
             x509.AuthorityKeyIdentifier.from_issuer_public_key(ca_public_key),
             critical=False).\
         add_extension(
             x509.SubjectKeyIdentifier.from_public_key(end_entity_public_key),
-            critical=False).\
-        add_extension(
+            critical=False)
+    if is_server:
+        end_entity_cert_builder.add_extension(
             x509.SubjectAlternativeName(
                 [x509.DNSName(name) for name in names]
             ),
             critical=False
-        ).\
+        )
+    end_entity_cert = end_entity_cert_builder.\
         sign(
             private_key=ca_private_key,
             algorithm=hashes.SHA256(),
@@ -178,18 +181,37 @@ def ensure_end_entity_cert(output_dir, names, ca_private_key, ca_cert, end_entit
             end_entity_cert.public_bytes(encoding=serialization.Encoding.PEM))
     return end_entity_cert
 
-def ensure_end_entity_suite(output_dir, names, ca_private_key, ca_cert, key_size):
+def ensure_end_entity_suite(output_dir, names, ca_private_key, ca_cert, key_size, is_server=True):
     name = names[0]
     end_entity_key = ensure_end_entity_key(output_dir, name, key_size)
     end_entity_public_key = end_entity_key.public_key()
-    ensure_end_entity_cert(output_dir, names, ca_private_key, ca_cert, end_entity_public_key)
+    ensure_end_entity_cert(output_dir,
+                           names,
+                           ca_private_key,
+                           ca_cert,
+                           end_entity_public_key,
+                           is_server)
 
 def main():
     args = parse_args()
     ca_private_key = ensure_ca_key(args.output_dir, args.key_size)
     ca_cert = ensure_ca_cert(args.output_dir, ca_private_key)
-    for names in args.domains:
-        ensure_end_entity_suite(args.output_dir, names, ca_private_key, ca_cert, args.key_size)
+    if args.domains:
+        for names in args.domains:
+            ensure_end_entity_suite(args.output_dir,
+                                    names,
+                                    ca_private_key,
+                                    ca_cert,
+                                    args.key_size,
+                                    True)
+    if args.client:
+        for name in args.client:
+            ensure_end_entity_suite(args.output_dir,
+                                    (name,),
+                                    ca_private_key,
+                                    ca_cert,
+                                    args.key_size,
+                                    False)
 
 if __name__ == '__main__':
     main()

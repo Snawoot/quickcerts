@@ -15,13 +15,14 @@ pip3 install .
 
 ## Usage example
 
-```
-quickcerts -D *.example.com example.com -D www.example2.com example2.com mx.example2.com
+```bash
+quickcerts -D *.example.com example.com -D www.example2.com example2.com mx.example2.com -C "John Doe" -C "Jane Doe"
 ```
 
 This command will produce following files in current directory:
 * CA certificate and key
-* Two certificates with keys having multiple DNS names in SubjectAlternativeName fields.
+* Two server certificates having multiple DNS names in SubjectAlternativeName fields and keys for that certificates.
+* Two client certificates for CN="John Doe" and CN="Jane Doe" (and keys for them).
 
 Consequent invokations will reuse created CA.
 
