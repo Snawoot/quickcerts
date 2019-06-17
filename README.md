@@ -13,6 +13,14 @@ Quick and easy X.509 certificate generator for SSL/TLS utilizing local PKI
 pip3 install .
 ```
 
+## Features
+
+* Easy to use.
+* Genarates both client and server certificates.
+* Produces certificates with proper attributes (Key Usage, Extended Key Usage, Authority Key Identifier, Subject Key Identifier and so on).
+* Supports certificates with multiple domain names (SAN, SubjectAlternativeName).
+* Supports wildcard certificates.
+
 ## Usage example
 
 ```bash
