@@ -21,6 +21,8 @@ Quick and easy X.509 certificate generator for SSL/TLS utilizing local PKI
 pip3 install quickcerts
 ```
 
+For deployment with Docker see "Docker" section below.
+
 ## Usage example
 
 ```bash
@@ -33,6 +35,17 @@ This command will produce following files in current directory:
 * Two client certificates for CN="John Doe" and CN="Jane Doe" (and keys for them).
 
 Consequent invokations will reuse created CA.
+
+## Docker
+
+Also you may run this application with Docker:
+
+```sh
+docker run -it --rm -v "$(pwd)/certs:/certs" \
+    yarmak/quickcerts -D server -C client1 -C client2 -C client3
+```
+
+In this example CA and certificates will be created in `./certs` directory.
 
 ## Synopsis
 
