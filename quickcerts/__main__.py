@@ -171,9 +171,9 @@ def ensure_end_entity_cert(output_dir, names, ca_private_key, ca_cert, end_entit
             x509.SubjectKeyIdentifier.from_public_key(end_entity_public_key),
             critical=False)
     if is_server:
-        end_entity_cert_builder.add_extension(
+        end_entity_cert_builder = end_entity_cert_builder.add_extension(
             x509.SubjectAlternativeName(
-                [x509.DNSName(name) for name in names]
+                [x509.DNSName(n) for n in names]
             ),
             critical=False
         )
