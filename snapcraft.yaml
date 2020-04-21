@@ -1,0 +1,22 @@
+name: quickcerts
+version: '0.3.0'
+summary: Quick and easy X.509 certificate generator for SSL/TLS utilizing local PKI.
+description: >
+  Quick and easy X.509 certificate generator for SSL/TLS utilizing local PKI.
+confinement: strict
+base: core18
+
+parts:
+  quickcerts:
+    plugin: python
+    python-version: python3
+    source: .
+    build-packages:
+      - gcc
+      - make
+      - python3-dev
+      - libffi-dev
+      - libssl-dev
+apps:
+  quickcerts:
+    command: bin/quickcerts
