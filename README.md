@@ -1,5 +1,7 @@
 # quickcerts
 
+[![quickcerts](https://snapcraft.io//quickcerts/badge.svg)](https://snapcraft.io/quickcerts)
+
 Quick and easy X.509 certificate generator for SSL/TLS utilizing local PKI
 
 ## Features
@@ -17,9 +19,29 @@ Quick and easy X.509 certificate generator for SSL/TLS utilizing local PKI
 
 ## Installation
 
+#### From source
+
+Run this command within source directory:
+
+```sh
+pip3 install .
 ```
+
+#### From PyPI
+
+```sh
 pip3 install quickcerts
 ```
+
+#### Snap Store
+
+[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/quickcerts)
+
+```sh
+sudo snap install quickcerts
+```
+
+#### Docker
 
 For deployment with Docker see "Docker" section below.
 
