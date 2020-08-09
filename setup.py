@@ -7,7 +7,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()  # pylint: disable=invalid-name
 
 setup(name='quickcerts',
-      version='1.0.0',
+      version='1.0.1',
       description='Quick and easy X.509 certificate generator for SSL/TLS utilizing local PKI',
       url='https://github.com/Snawoot/quickcerts',
       author='Vladislav Yarmak',
