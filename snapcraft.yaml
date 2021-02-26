@@ -1,5 +1,5 @@
 name: quickcerts
-version: '1.0.0'
+version: '1.0.1'
 summary: Quick and easy X.509 certificate generator for SSL/TLS utilizing local PKI.
 description: >
   Quick and easy X.509 certificate generator for SSL/TLS utilizing local PKI.
@@ -17,6 +17,7 @@ parts:
       - python3-dev
       - libffi-dev
       - libssl-dev
+      - cargo
 apps:
   quickcerts:
     command: bin/quickcerts
