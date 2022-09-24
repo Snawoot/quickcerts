@@ -17,6 +17,7 @@ DAY = datetime.timedelta(1, 0, 0)
 CA_FILENAME = 'ca'
 KEY_EXT = 'key'
 CERT_EXT = 'pem'
+PFX_EXT = 'pfx'
 E = 65537
 
 safe_symbols = set(string.ascii_letters + string.digits + '-.')
@@ -36,6 +37,17 @@ def parse_args():
             fail()
         return ival
 
+    def check_uint(val):
+        def fail():
+            raise argparse.ArgumentTypeError("%s is not valud unsigned int" % (repr(val),))
+        try:
+            ival = int(val)
+        except ValueError:
+            fail()
+        if ival < 0:
+            fail()
+        return ival
+
     parser = argparse.ArgumentParser(
         description="Generate RSA certificates signed by common self-signed CA",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -46,6 +58,10 @@ def parse_args():
                         type=check_keysize,
                         default=2048,
                         help="RSA key size used for all certificates")
+    parser.add_argument("--kdf-rounds",
+                        type=check_uint,
+                        default=50000,
+                        help="number of KDF rounds")
     parser.add_argument("-D", "--domains",
                         action="append",
                         nargs="+",
@@ -55,6 +71,9 @@ def parse_args():
     parser.add_argument("-C", "--client",
                         action="append",
                         help="Generate client certificate with following name.")
+    parser.add_argument("-P", "--password",
+                        default='password',
+                        help="password for newly generated .pfx files")
 
     return parser.parse_args()
 
@@ -135,7 +154,11 @@ def ensure_end_entity_cert(output_dir, names, ca_private_key, ca_cert, end_entit
     name = names[0]
     end_entity_cert_filename = os.path.join(output_dir, safe_filename(name) + '.' + CERT_EXT)
     if os.path.exists(end_entity_cert_filename):
-        return
+        with open(end_entity_cert_filename, "rb") as end_entity_cert_file:
+            end_entity_cert = x509.load_pem_x509_certificate(
+                end_entity_cert_file.read(),
+                backend=default_backend())
+            return end_entity_cert
     ca_public_key = ca_private_key.public_key()
     end_entity_cert_builder = x509.CertificateBuilder().\
         subject_name(x509.Name([
@@ -188,16 +211,35 @@ def ensure_end_entity_cert(output_dir, names, ca_private_key, ca_cert, end_entit
             end_entity_cert.public_bytes(encoding=serialization.Encoding.PEM))
     return end_entity_cert
 
-def ensure_end_entity_suite(output_dir, names, ca_private_key, ca_cert, key_size, is_server=True):
+def ensure_end_entity_pfx(output_dir, name, end_entity_key, end_entity_cert, kdf_rounds=50000, password=b"password"):
+    end_entity_pfx_filename = os.path.join(output_dir, safe_filename(name) + '.' + PFX_EXT)
+    encryption = serialization.PrivateFormat.PKCS12.encryption_builder().\
+        kdf_rounds(kdf_rounds).\
+        key_cert_algorithm(serialization.pkcs12.PBES.PBESv1SHA1And3KeyTripleDESCBC).\
+        hmac_hash(hashes.SHA1()).\
+        build(password)
+    end_entity_pfx = serialization.pkcs12.serialize_key_and_certificates(
+        name.encode("utf-8"),
+        end_entity_key,
+        end_entity_cert,
+        None,
+        encryption)
+    with open(end_entity_pfx_filename, "wb") as end_entity_pfx_file:
+        end_entity_pfx_file.write(end_entity_pfx)
+
+def ensure_end_entity_suite(output_dir, names, ca_private_key, ca_cert, key_size,
+                            is_server=True, kdf_rounds=50000, password=b"password"):
     name = names[0]
     end_entity_key = ensure_end_entity_key(output_dir, name, key_size)
     end_entity_public_key = end_entity_key.public_key()
-    ensure_end_entity_cert(output_dir,
+    end_entity_cert = ensure_end_entity_cert(output_dir,
                            names,
                            ca_private_key,
                            ca_cert,
                            end_entity_public_key,
                            is_server)
+    if not is_server:
+        ensure_end_entity_pfx(output_dir, name, end_entity_key, end_entity_cert, kdf_rounds, password.encode("utf-8"))
 
 def main():
     args = parse_args()
@@ -210,7 +252,9 @@ def main():
                                     ca_private_key,
                                     ca_cert,
                                     args.key_size,
-                                    True)
+                                    True,
+                                    args.kdf_rounds,
+                                    args.password)
     if args.client:
         for name in args.client:
             ensure_end_entity_suite(args.output_dir,
@@ -218,7 +262,9 @@ def main():
                                     ca_private_key,
                                     ca_cert,
                                     args.key_size,
-                                    False)
+                                    False,
+                                    args.kdf_rounds,
+                                    args.password)
 
 if __name__ == '__main__':
     main()

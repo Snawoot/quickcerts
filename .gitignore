@@ -111,5 +111,7 @@ man/*.?
 *.cer
 *.crt
 *.key
+*.pfx
+*.p12
 
 *.snap
