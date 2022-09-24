@@ -24,6 +24,7 @@ You can say thanks to the author by donations to these wallets:
 * Produces certificates with proper attributes (Key Usage, Extended Key Usage, Authority Key Identifier, Subject Key Identifier and so on).
 * Supports certificates with multiple domain names (SAN, SubjectAlternativeName).
 * Supports wildcard certificates.
+* Generates PKCS12 (.pfx, .p12) as well
 
 ## Requirements
 
@@ -86,22 +87,25 @@ In this example CA and certificates will be created in `./certs` directory.
 
 ```
 $ quickcerts --help
-usage: quickcerts [-h] [-o OUTPUT_DIR] [-k KEY_SIZE]
-                  [-D DOMAINS [DOMAINS ...]] [-C CLIENT]
+usage: quickcerts [-h] [-o OUTPUT_DIR] [-k KEY_SIZE] [--kdf-rounds KDF_ROUNDS]
+                  [-D DOMAINS [DOMAINS ...]] [-C CLIENT] [-P PASSWORD]
 
 Generate RSA certificates signed by common self-signed CA
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -o OUTPUT_DIR, --output-dir OUTPUT_DIR
                         location of certificates output (default: .)
   -k KEY_SIZE, --key-size KEY_SIZE
                         RSA key size used for all certificates (default: 2048)
+  --kdf-rounds KDF_ROUNDS
+                        number of KDF rounds (default: 50000)
   -D DOMAINS [DOMAINS ...], --domains DOMAINS [DOMAINS ...]
-                        Generate server certificate which covers following
-                        domains delimited by spaces. First one will be set as
-                        CN. Option can be used multiple times. (default: None)
+                        Generate server certificate which covers following domains delimited
+                        by spaces. First one will be set as CN. Option can be used multiple
+                        times. (default: None)
   -C CLIENT, --client CLIENT
-                        Generate client certificate with following name.
-                        (default: None)
+                        Generate client certificate with following name. (default: None)
+  -P PASSWORD, --password PASSWORD
+                        password for newly generated .pfx files (default: password)
 ```
