@@ -1,5 +1,5 @@
 name: quickcerts
-version: '1.1.0'
+version: '1.2.0'
 summary: Quick and easy X.509 certificate generator for SSL/TLS utilizing local PKI.
 description: >
   Quick and easy X.509 certificate generator for SSL/TLS utilizing local PKI.
