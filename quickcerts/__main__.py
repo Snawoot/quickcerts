@@ -75,8 +75,9 @@ def parse_args():
                         action="append",
                         nargs="+",
                         help="Generate server certificate which covers "
-                        "following domains delimited by spaces. First one "
-                        "will be set as CN. Option can be used multiple times.")
+                        "following domains or IP addresses delimited by spaces. "
+                        "First one will be set as CN. "
+                        "Option can be used multiple times.")
     parser.add_argument("-C", "--client",
                         action="append",
                         help="Generate client certificate with following name.")
