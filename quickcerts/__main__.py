@@ -2,9 +2,11 @@
 
 import argparse
 import datetime
+import ipaddress
 import uuid
 import os.path
 import re
+import socket
 import string
 
 from cryptography import x509
@@ -24,6 +26,13 @@ safe_symbols = set(string.ascii_letters + string.digits + '-.')
 
 def safe_filename(name):
     return "".join(c if c in safe_symbols else '_' for c in name)
+
+def is_ipaddress(name):
+    try:
+        socket.getaddrinfo(name, 0, flags=socket.AI_NUMERICHOST)
+        return True
+    except socket.gaierror:
+        return False
 
 def parse_args():
     def check_keysize(val):
@@ -196,7 +205,7 @@ def ensure_end_entity_cert(output_dir, names, ca_private_key, ca_cert, end_entit
     if is_server:
         end_entity_cert_builder = end_entity_cert_builder.add_extension(
             x509.SubjectAlternativeName(
-                [x509.DNSName(n) for n in names]
+                [x509.IPAddress(ipaddress.ip_address(n)) if is_ipaddress(n) else x509.DNSName(n) for n in names]
             ),
             critical=False
         )
