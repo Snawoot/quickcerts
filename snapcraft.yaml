@@ -9,7 +9,6 @@ base: core22
 parts:
   quickcerts:
     plugin: python
-    python-version: python3
     source: .
     build-packages:
       - gcc
