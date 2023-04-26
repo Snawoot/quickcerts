@@ -18,6 +18,7 @@ parts:
       - libffi-dev
       - libssl-dev
       - cargo
+      - pkg-config
 apps:
   quickcerts:
     command: bin/quickcerts
