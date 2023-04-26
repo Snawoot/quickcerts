@@ -4,7 +4,7 @@ summary: Quick and easy X.509 certificate generator for SSL/TLS utilizing local 
 description: >
   Quick and easy X.509 certificate generator for SSL/TLS utilizing local PKI.
 confinement: strict
-base: core18
+base: core22
 
 parts:
   quickcerts:
