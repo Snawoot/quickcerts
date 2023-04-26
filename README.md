@@ -65,9 +65,13 @@ For deployment with Docker see "Docker" section below.
 quickcerts -D *.example.com example.com -D www.example2.com example2.com mx.example2.com -C "John Doe" -C "Jane Doe"
 ```
 
-This command will produce following files in current directory:
+```bash
+quickcerts -D localhost 127.0.0.1
+```
+
+These commands will produce following files in current directory:
 * CA certificate and key
-* Two server certificates having multiple DNS names in SubjectAlternativeName fields and keys for that certificates.
+* Two server certificates having multiple DNS names or IP addresses in SubjectAlternativeName fields and keys for that certificates.
 * Two client certificates for CN="John Doe" and CN="Jane Doe" (and keys for them).
 
 Consequent invokations will reuse created CA.
@@ -101,11 +105,14 @@ options:
   --kdf-rounds KDF_ROUNDS
                         number of KDF rounds (default: 50000)
   -D DOMAINS [DOMAINS ...], --domains DOMAINS [DOMAINS ...]
-                        Generate server certificate which covers following domains delimited
-                        by spaces. First one will be set as CN. Option can be used multiple
-                        times. (default: None)
+                        Generate server certificate which covers following
+                        domains or IP addresses delimited by spaces. First one
+                        will be set as CN. Option can be used multiple times.
+                        (default: None)
   -C CLIENT, --client CLIENT
-                        Generate client certificate with following name. (default: None)
+                        Generate client certificate with following name.
+                        (default: None)
   -P PASSWORD, --password PASSWORD
-                        password for newly generated .pfx files (default: password)
+                        password for newly generated .pfx files (default:
+                        password)
 ```
